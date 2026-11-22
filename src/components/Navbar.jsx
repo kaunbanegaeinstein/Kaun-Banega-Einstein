@@ -2,7 +2,7 @@ import { onAuthStateChanged } from 'firebase/auth';
 import { doc, getDoc, onSnapshot } from 'firebase/firestore';
 import { useEffect, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { FiHome, FiBookOpen, FiAward, FiGift, FiFileText } from 'react-icons/fi';
+import { FiHome, FiBookOpen, FiAward, FiGift, FiFileText, FiImage } from 'react-icons/fi';
 import logo from '../assets/KBE.png';
 import instLogo1 from '../assets/kawle.png';
 import instLogo2 from '../assets/logo.png';
@@ -132,6 +132,7 @@ const Navbar = ({ forceDarkText = false }) => {
     { path: '#about', label: 'About' },
     { path: '#syllabus', label: 'Syllabus' },
     { path: '#isro-prize', label: 'Prizes' },
+    { path: '/gallery', label: 'Gallery' },
     ...(resultsVisible ? [{ path: '/results', label: 'Results' }] : []),
     ...(certificatesVisible ? [{ path: '/certificate', label: 'Certificates' }] : []),
     { path: '#contact', label: 'Contact' },
@@ -142,6 +143,7 @@ const Navbar = ({ forceDarkText = false }) => {
     { id: 'about', path: '/', label: 'Home', icon: FiHome },
     { id: 'syllabus', path: '#syllabus', label: 'Syllabus', icon: FiBookOpen },
     { id: 'prizes', path: '#isro-prize', label: 'Prizes', icon: FiGift },
+    { id: 'gallery', path: '/gallery', label: 'Gallery', icon: FiImage },
   ];
 
   if (resultsVisible) {
@@ -171,6 +173,10 @@ const Navbar = ({ forceDarkText = false }) => {
   const navigateToSection = (path) => {
     if (location.pathname !== '/') {
       navigate(`/${path}`);
+      setTimeout(() => {
+        const element = document.querySelector(path);
+        if (element) element.scrollIntoView({ behavior: 'smooth' });
+      }, 100);
       return;
     }
 
@@ -320,6 +326,7 @@ const Navbar = ({ forceDarkText = false }) => {
             const routeTab = {
               '/results': 'results',
               '/certificate': 'certificate',
+              '/gallery': 'gallery',
             }[location.pathname];
             const isActive = routeTab
               ? routeTab === item.id

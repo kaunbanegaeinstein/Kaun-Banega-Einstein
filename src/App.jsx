@@ -15,6 +15,7 @@ import AdminDashboard from './pages/AdminDashboard';
 import AdminLogin from './pages/AdminLogin';
 import Results from './pages/Results'
 import CertificatePortal from './pages/CertificatePortal';
+import Gallery from './pages/Gallery';
 import StudentRegistration from './pages/StudentRegistration';
 import StudentLogin from './pages/StudentLogin';
 import StudentDashboard from './pages/StudentDashboard';
@@ -147,6 +148,7 @@ export default function App() {
         <Route path="/student/login" element={<StudentLogin />} />
         <Route path="/results" element={<Results />} />
         <Route path="/certificate" element={<CertificatePortal />} />
+        <Route path="/gallery" element={<Gallery />} />
         <Route path="/dashboard" element={<ProtectedRoute><SchoolDashboard /></ProtectedRoute>} />
         <Route path="/student/dashboard" element={<StudentProtectedRoute><StudentDashboard /></StudentProtectedRoute>} />
         <Route path="/admin/login" element={<AdminLogin />} />
