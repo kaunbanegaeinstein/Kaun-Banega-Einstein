@@ -1,14 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { 
   FiImage, 
   FiMaximize2, 
   FiX, 
   FiChevronLeft, 
   FiChevronRight, 
-  FiCalendar, 
-  FiAward, 
-  FiCompass,
   FiArrowRight,
   FiHome
 } from 'react-icons/fi';
@@ -30,112 +27,89 @@ import veerRatnaPosterImg from '../assets/poster.webp';
 const galleryItems = [
   {
     id: 1,
-    title: 'ISRO Space Centre Educational Tour',
-    category: 'ISRO Tour',
+    caption: 'ISRO Space Centre Educational Tour',
     image: isroTourImg,
-    tag: 'National Pride',
-    year: 'ISRO Bengaluru & Sriharikota',
-    description: 'Top KBE merit rankers visiting the Indian Space Research Organisation (ISRO) satellite facilities, learning directly from aerospace scientists.',
+    defaultRatio: 1.4,
   },
   {
     id: 2,
-    title: 'All-Expenses-Paid Flight Journey',
-    category: 'ISRO Tour',
+    caption: 'All-Expenses-Paid Flight Journey to Bengaluru',
     image: flightImg,
-    tag: 'Student Experience',
-    year: 'Bengaluru Flight',
-    description: 'First-time flight experience for brilliant government and zilla parishad school winners travelling to ISRO headquarters for scientific exploration.',
+    defaultRatio: 0.8,
   },
   {
     id: 3,
-    title: 'ISRO Satellite & Rocket Exhibit',
-    category: 'ISRO Tour',
+    caption: 'ISRO Satellite & Rocket Exhibit',
     image: iroImg,
-    tag: 'Space Exploration',
-    year: 'Heritage Tour',
-    description: 'Curious young minds observing real scale rocket models, propulsion systems, and historic satellite launch vehicles.',
+    defaultRatio: 1.5,
   },
   {
     id: 4,
-    title: 'School-Level Written Examination Session',
-    category: 'Examination',
+    caption: 'School-Level Written Examination Session',
     image: examHallImg,
-    tag: 'Round 1 Exam',
-    year: 'Competition Day',
-    description: 'Simultaneous morning examination conducted across participating secondary schools with strict academic standards.',
+    defaultRatio: 1.35,
   },
   {
     id: 5,
-    title: 'Students Appearing for KBE Merit Test',
-    category: 'Examination',
+    caption: 'Students Appearing for KBE Merit Test',
     image: studentsExamImg,
-    tag: 'Academic Drive',
-    year: 'State Evaluation',
-    description: 'Class 10th science aspirants writing the comprehensive State Board and NCERT mapped Einstein Aptitude Test.',
+    defaultRatio: 0.85,
   },
   {
     id: 6,
-    title: 'Grand Felicitation & Science Stage',
-    category: 'Ceremony',
+    caption: 'Grand Felicitation & Science Stage',
     image: eventStageImg,
-    tag: 'Award Ceremony',
-    year: 'Grand Finale',
-    description: 'Distinguished guests, organizers, and educators honoring top school scorers and scientific innovators on the grand stage.',
+    defaultRatio: 1.5,
   },
   {
     id: 7,
-    title: 'Official KBE State Competition Announcement',
-    category: 'Bulletins',
+    caption: 'Official KBE State Competition Announcement',
     image: kbePosterImg,
-    tag: 'State Blueprint',
-    year: 'KBE 2026',
-    description: 'Official statewide competition launch bulletin with examination guidelines, syllabus structure, and award announcements.',
+    defaultRatio: 0.72,
   },
   {
     id: 8,
-    title: 'Swami Vivekananda Institute Science Initiative',
-    category: 'Bulletins',
+    caption: 'Swami Vivekananda Institute Science Initiative',
     image: svicsmPosterImg,
-    tag: 'Institution Launch',
-    year: 'SVICSM Campus',
-    description: 'Joint educational initiative by Swami Vivekananda Jr. College and B. K. Kawale College for nurturing rural scientific talent.',
+    defaultRatio: 0.72,
   },
   {
     id: 9,
-    title: 'Vigyan Ratna Puraskar Teacher Recognition',
-    category: 'Ceremony',
+    caption: 'Vigyan Ratna Puraskar Teacher Recognition',
     image: veerRatnaPosterImg,
-    tag: 'Teacher Honors',
-    year: 'Puraskar 2026',
-    description: 'Special felicitation program dedicated to recognizing exceptional science coordinators and dedicated school teachers.',
+    defaultRatio: 1.35,
   },
 ];
 
-const categories = ['All', 'ISRO Tour', 'Examination', 'Ceremony', 'Bulletins'];
-
 const Gallery = () => {
-  const [activeCategory, setActiveCategory] = useState('All');
   const [selectedImageIndex, setSelectedImageIndex] = useState(null);
+  const [ratios, setRatios] = useState({});
 
-  // Filter items
-  const filteredItems = activeCategory === 'All' 
-    ? galleryItems 
-    : galleryItems.filter(item => item.category === activeCategory);
+  // Dynamically capture each image's real aspect ratio on load
+  const handleImageLoad = (id, e) => {
+    const { naturalWidth, naturalHeight } = e.target;
+    if (naturalWidth && naturalHeight) {
+      setRatios((prev) => ({
+        ...prev,
+        [id]: naturalWidth / naturalHeight,
+      }));
+    }
+  };
 
   // Modal navigation helpers
   const handlePrev = (e) => {
     e?.stopPropagation();
     if (selectedImageIndex === null) return;
-    setSelectedImageIndex((prev) => (prev > 0 ? prev - 1 : filteredItems.length - 1));
+    setSelectedImageIndex((prev) => (prev > 0 ? prev - 1 : galleryItems.length - 1));
   };
 
   const handleNext = (e) => {
     e?.stopPropagation();
     if (selectedImageIndex === null) return;
-    setSelectedImageIndex((prev) => (prev < filteredItems.length - 1 ? prev + 1 : 0));
+    setSelectedImageIndex((prev) => (prev < galleryItems.length - 1 ? prev + 1 : 0));
   };
 
-  // Keyboard navigation & body scroll locking for lightbox modal
+  // Keyboard navigation & body scroll lock
   useEffect(() => {
     if (selectedImageIndex === null) return undefined;
 
@@ -149,12 +123,11 @@ const Gallery = () => {
     };
 
     window.addEventListener('keydown', handleKeyDown);
-
     return () => {
       document.body.style.overflow = originalOverflow;
       window.removeEventListener('keydown', handleKeyDown);
     };
-  }, [selectedImageIndex, filteredItems.length]);
+  }, [selectedImageIndex]);
 
   return (
     <div className="min-h-screen bg-slate-50 font-manrope text-slate-800 flex flex-col justify-between overflow-x-hidden">
@@ -169,125 +142,63 @@ const Gallery = () => {
         </div>
 
         <div className="max-w-7xl mx-auto">
-          {/* Header Section */}
-          <div className="text-center max-w-3xl mx-auto mb-10 sm:mb-14">
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-blue-100/80 border border-blue-200/80 text-blue-800 font-bold text-xs uppercase tracking-wider mb-4 shadow-xs">
+          {/* Minimal Header */}
+          <div className="text-center max-w-2xl mx-auto mb-10 sm:mb-14">
+            {/* <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-blue-100/80 border border-blue-200/80 text-blue-800 font-bold text-xs uppercase tracking-wider mb-4 shadow-xs">
               <FiImage className="w-3.5 h-3.5" />
               <span>Memories & Milestones</span>
-            </div>
+            </div> */}
             
-            <h1 className="text-3xl sm:text-5xl md:text-6xl font-extrabold text-slate-900 tracking-tight mb-4 sm:mb-6">
+            <h1 className="text-3xl sm:text-5xl font-extrabold text-slate-900 tracking-tight">
               Photo Gallery
             </h1>
-
-            <p className="text-sm sm:text-base md:text-lg text-slate-600 font-medium leading-relaxed">
-              Explore unforgettable moments from previous editions of Kaun Banega Einstein — from rigorous examination halls to the inspiring national ISRO space study tour and stage felicitations.
-            </p>
           </div>
 
-          {/* Category Filter Tabs */}
-          <div className="flex items-center justify-center gap-2 sm:gap-3 flex-wrap mb-10 sm:mb-14">
-            {categories.map((cat) => {
-              const isActive = activeCategory === cat;
-              const count = cat === 'All' 
-                ? galleryItems.length 
-                : galleryItems.filter(i => i.category === cat).length;
+          {/* Justified Mosaic Flex Gallery */}
+          <div className="flex flex-wrap gap-3 sm:gap-4 after:content-[''] after:flex-grow-[99999]">
+            {galleryItems.map((item, index) => {
+              const aspectRatio = ratios[item.id] || item.defaultRatio;
+              const baseHeight = 250;
 
               return (
-                <button
-                  key={cat}
-                  onClick={() => setActiveCategory(cat)}
-                  className={`px-4 sm:px-5 py-2 sm:py-2.5 rounded-full text-xs sm:text-sm font-bold transition-all duration-300 flex items-center gap-2 cursor-pointer shadow-xs ${
-                    isActive 
-                      ? 'bg-blue-700 text-white shadow-md shadow-blue-700/20 scale-105' 
-                      : 'bg-white/80 hover:bg-white text-slate-700 border border-slate-200/80 hover:border-blue-300'
-                  }`}
+                <motion.div
+                  key={item.id}
+                  initial={{ opacity: 0, scale: 0.96 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ duration: 0.35, delay: index * 0.04 }}
+                  onClick={() => setSelectedImageIndex(index)}
+                  style={{
+                    flexGrow: aspectRatio * 100,
+                    flexBasis: `${aspectRatio * baseHeight}px`,
+                  }}
+                  className="group relative h-56 sm:h-64 md:h-72 rounded-2xl overflow-hidden bg-slate-200/70 shadow-sm hover:shadow-xl transition-all duration-500 cursor-pointer border border-white/80"
                 >
-                  <span>{cat}</span>
-                  <span className={`text-[10px] sm:text-xs px-1.5 py-0.5 rounded-full font-bold ${
-                    isActive ? 'bg-white/20 text-white' : 'bg-slate-100 text-slate-500'
-                  }`}>
-                    {count}
-                  </span>
-                </button>
+                  <img
+                    src={item.image}
+                    alt={item.caption}
+                    loading="lazy"
+                    onLoad={(e) => handleImageLoad(item.id, e)}
+                    className="w-full h-full object-cover object-center transition-transform duration-700 ease-out group-hover:scale-105"
+                  />
+
+                  {/* Subtle Zoom Icon on Hover */}
+                  <div className="absolute top-3 right-3 z-10 w-8 h-8 rounded-full bg-slate-950/50 backdrop-blur-md text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                    <FiMaximize2 className="w-3.5 h-3.5" />
+                  </div>
+
+                  {/* Single Caption Inside Image Container */}
+                  <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-slate-950/85 via-slate-950/40 to-transparent p-4 pt-10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end">
+                    <p className="text-white text-xs sm:text-sm font-semibold leading-snug line-clamp-1 transform translate-y-1.5 group-hover:translate-y-0 transition-transform duration-300">
+                      {item.caption}
+                    </p>
+                  </div>
+                </motion.div>
               );
             })}
           </div>
 
-          {/* Gallery Grid */}
-          <motion.div 
-            layout 
-            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8"
-          >
-            <AnimatePresence>
-              {filteredItems.map((item, index) => (
-                <motion.div
-                  key={item.id}
-                  layout
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, scale: 0.95 }}
-                  transition={{ duration: 0.35, delay: index * 0.05 }}
-                  onClick={() => setSelectedImageIndex(index)}
-                  className="group relative rounded-3xl bg-white/80 border border-white shadow-md hover:shadow-2xl transition-all duration-500 overflow-hidden cursor-pointer flex flex-col justify-between hover:-translate-y-1.5"
-                >
-                  {/* Image Container */}
-                  <div className="relative aspect-[4/3] w-full overflow-hidden bg-slate-100">
-                    <img 
-                      src={item.image} 
-                      alt={item.title}
-                      loading="lazy"
-                      className="w-full h-full object-cover object-center transition-transform duration-700 ease-out group-hover:scale-110"
-                    />
-                    
-                    {/* Dark gradient overlay on hover */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-slate-950/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-5">
-                      <div className="text-white transform translate-y-2 group-hover:translate-y-0 transition-transform duration-300">
-                        <span className="inline-block text-[11px] font-bold uppercase tracking-wider text-amber-300 mb-1">
-                          {item.year}
-                        </span>
-                        <p className="text-xs line-clamp-2 text-slate-200">
-                          {item.description}
-                        </p>
-                      </div>
-                    </div>
-
-                    {/* Tag badge */}
-                    <div className="absolute top-4 left-4 z-10">
-                      <span className="bg-white/90 backdrop-blur-md text-slate-900 font-extrabold text-[11px] px-3 py-1 rounded-full shadow-xs border border-white/60">
-                        {item.tag}
-                      </span>
-                    </div>
-
-                    {/* Zoom Icon Button */}
-                    <div className="absolute top-4 right-4 z-10 w-9 h-9 rounded-full bg-slate-900/60 backdrop-blur-md text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 shadow-md">
-                      <FiMaximize2 className="w-4 h-4" />
-                    </div>
-                  </div>
-
-                  {/* Card Content Footer */}
-                  <div className="p-5 sm:p-6 bg-white/60 backdrop-blur-xs flex-1 flex flex-col justify-between">
-                    <div>
-                      <span className="text-[11px] font-bold uppercase tracking-wider text-blue-700 block mb-1">
-                        {item.category}
-                      </span>
-                      <h3 className="text-base sm:text-lg font-extrabold text-slate-900 group-hover:text-blue-700 transition-colors leading-snug">
-                        {item.title}
-                      </h3>
-                    </div>
-                    
-                    <div className="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500 font-semibold">
-                      <span>Click to enlarge</span>
-                      <FiArrowRight className="w-4 h-4 text-slate-400 group-hover:text-blue-700 group-hover:translate-x-1 transition-all" />
-                    </div>
-                  </div>
-                </motion.div>
-              ))}
-            </AnimatePresence>
-          </motion.div>
-
           {/* Interactive Lightbox Modal */}
-          {selectedImageIndex !== null && filteredItems[selectedImageIndex] && (
+          {selectedImageIndex !== null && galleryItems[selectedImageIndex] && (
             <div 
               className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-950/90 backdrop-blur-md p-4 sm:p-6 md:p-10 select-none animate-in fade-in duration-200"
               onClick={() => setSelectedImageIndex(null)}
@@ -322,44 +233,24 @@ const Gallery = () => {
                 <FiChevronRight className="w-6 h-6" />
               </button>
 
-              {/* Modal Card Content */}
+              {/* Lightbox Image + Single Caption */}
               <div 
-                className="relative max-w-4xl w-full max-h-[90vh] flex flex-col items-center justify-center bg-slate-900/90 rounded-3xl overflow-hidden border border-white/15 shadow-2xl"
+                className="relative max-w-5xl w-full max-h-[90vh] flex flex-col items-center justify-center rounded-2xl overflow-hidden shadow-2xl bg-slate-950 border border-white/10"
                 onClick={(e) => e.stopPropagation()}
               >
-                {/* Full-view Image */}
-                <div className="relative w-full max-h-[65vh] sm:max-h-[70vh] flex items-center justify-center bg-black/40 overflow-hidden">
-                  <img
-                    src={filteredItems[selectedImageIndex].image}
-                    alt={filteredItems[selectedImageIndex].title}
-                    className="max-h-[65vh] sm:max-h-[70vh] w-auto max-w-full object-contain mx-auto"
-                  />
-                </div>
+                <img
+                  src={galleryItems[selectedImageIndex].image}
+                  alt={galleryItems[selectedImageIndex].caption}
+                  className="max-h-[78vh] w-auto max-w-full object-contain mx-auto"
+                />
 
-                {/* Caption Bar */}
-                <div className="w-full p-4 sm:p-6 bg-slate-900 border-t border-white/10 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-white">
-                  <div>
-                    <div className="flex items-center gap-2 mb-1">
-                      <span className="bg-blue-600 text-white text-[10px] sm:text-xs font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full">
-                        {filteredItems[selectedImageIndex].category}
-                      </span>
-                      <span className="text-xs text-slate-400 font-mono">
-                        {filteredItems[selectedImageIndex].year}
-                      </span>
-                    </div>
-                    <h4 className="text-base sm:text-lg font-bold text-white">
-                      {filteredItems[selectedImageIndex].title}
-                    </h4>
-                    <p className="text-xs sm:text-sm text-slate-300 max-w-2xl mt-1 leading-relaxed">
-                      {filteredItems[selectedImageIndex].description}
-                    </p>
-                  </div>
-
-                  <div className="text-right shrink-0">
-                    <span className="text-xs sm:text-sm font-mono text-slate-400 bg-white/10 px-3 py-1 rounded-full border border-white/10">
-                      {selectedImageIndex + 1} / {filteredItems.length}
-                    </span>
-                  </div>
+                <div className="w-full px-5 py-3.5 bg-slate-900/95 border-t border-white/10 flex items-center justify-between gap-4 text-white">
+                  <p className="text-xs sm:text-sm font-semibold text-slate-100">
+                    {galleryItems[selectedImageIndex].caption}
+                  </p>
+                  <span className="text-xs font-mono text-slate-400 bg-white/10 px-2.5 py-1 rounded-full shrink-0">
+                    {selectedImageIndex + 1} / {galleryItems.length}
+                  </span>
                 </div>
               </div>
             </div>
