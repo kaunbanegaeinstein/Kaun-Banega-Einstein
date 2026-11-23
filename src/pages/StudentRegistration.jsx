@@ -5,7 +5,7 @@ import { FiArrowLeft, FiCheckCircle, FiImage, FiX, FiLock } from 'react-icons/fi
 import { Link, useNavigate } from 'react-router-dom';
 import { auth, firestore } from '../lib/firebase';
 import { uploadStudentPhoto, generateApplicationNumber } from '../lib/cloudinary';
-import kbePoster from '../assets/kbe-poster-1.webp';
+import kbePoster from '../assets/p2.webp';
 import PosterModal from '../components/PosterModal';
 import schools from '../../data/schools.json';
 

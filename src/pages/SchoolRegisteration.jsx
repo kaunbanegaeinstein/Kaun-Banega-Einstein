@@ -4,7 +4,7 @@ import { doc, getDoc, runTransaction, serverTimestamp } from 'firebase/firestore
 import { FiArrowLeft, FiCheckCircle, FiX, FiLock } from 'react-icons/fi';
 import { Link, useNavigate } from 'react-router-dom';
 import schools from '../../data/schools.json';
-import kbePoster from '../assets/kbe-poster-1.webp';
+import kbePoster from '../assets/p2.webp';
 import PosterModal from '../components/PosterModal';
 import { auth, firestore } from '../lib/firebase';
 
