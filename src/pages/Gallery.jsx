@@ -14,70 +14,84 @@ import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 
 // Image assets
-import isroTourImg from '../assets/isro.png';
-import iroImg from '../assets/iro.png';
-import flightImg from '../assets/flight.png';
-import examHallImg from '../assets/morn.png';
-import studentsExamImg from '../assets/stud.webp';
-import eventStageImg from '../assets/hero.webp';
-import kbePosterImg from '../assets/kbe-poster-1.webp';
-import svicsmPosterImg from '../assets/svicsm-poster.webp';
-import veerRatnaPosterImg from '../assets/poster.webp';
+import galleryImage1 from '../assets/gallery/1.webp';
+import galleryImage2 from '../assets/gallery/2.webp';
+import galleryImage3 from '../assets/gallery/3.webp';
+import galleryImage4 from '../assets/gallery/4.webp';
+import galleryImage5 from '../assets/gallery/5.webp';
+import galleryImage6 from '../assets/gallery/6.webp';
+import galleryImage7 from '../assets/gallery/7.webp';
+import galleryImage8 from '../assets/gallery/8.webp';
+import galleryImage9 from '../assets/gallery/9.webp';
+import kbePoster from '../assets/kbe-poster-1.webp';
+import veerRatnaPoster from '../assets/poster.webp';
 
 const galleryItems = [
   {
     id: 1,
-    caption: 'ISRO Space Centre Educational Tour',
-    image: isroTourImg,
+    caption: 'KBE Students at the Airport Departure Terminal',
+    image: galleryImage1,
     defaultRatio: 1.4,
   },
   {
     id: 2,
-    caption: 'All-Expenses-Paid Flight Journey to Bengaluru',
-    image: flightImg,
-    defaultRatio: 0.8,
+    caption: 'KBE Team Boarding the Educational Flight',
+    image: galleryImage2,
+    defaultRatio: 1.35,
   },
   {
     id: 3,
-    caption: 'ISRO Satellite & Rocket Exhibit',
-    image: iroImg,
-    defaultRatio: 1.5,
+    caption: 'Students and Mentors Beside the Aircraft',
+    image: galleryImage3,
+    defaultRatio: 1.35,
   },
   {
     id: 4,
-    caption: 'School-Level Written Examination Session',
-    image: examHallImg,
+    caption: 'KBE Educational Tour Group',
+    image: galleryImage4,
     defaultRatio: 1.35,
   },
   {
     id: 5,
-    caption: 'Students Appearing for KBE Merit Test',
-    image: studentsExamImg,
+    caption: 'Inside the Bengaluru Airport Terminal',
+    image: galleryImage5,
     defaultRatio: 0.85,
   },
   {
     id: 6,
-    caption: 'Grand Felicitation & Science Stage',
-    image: eventStageImg,
-    defaultRatio: 1.5,
+    caption: 'Boarding for the Next KBE Journey',
+    image: galleryImage6,
+    defaultRatio: 1.35,
   },
   {
     id: 7,
-    caption: 'Official KBE State Competition Announcement',
-    image: kbePosterImg,
+    caption: 'KBE Group at the RLV-LEX Centre',
+    image: galleryImage7,
     defaultRatio: 0.72,
   },
   {
     id: 8,
-    caption: 'Swami Vivekananda Institute Science Initiative',
-    image: svicsmPosterImg,
-    defaultRatio: 0.72,
+    caption: 'Exploring the Nature Park at Science City',
+    image: galleryImage8,
+    defaultRatio: 1.35,
   },
   {
     id: 9,
-    caption: 'Vigyan Ratna Puraskar Teacher Recognition',
-    image: veerRatnaPosterImg,
+    caption: 'Learning at the Science Museum',
+    image: galleryImage9,
     defaultRatio: 1.35,
+  },
+  {
+    id: 10,
+    caption: 'Official KBE 2026 Competition Poster',
+    image: kbePoster,
+    defaultRatio: 0.89,
+  },
+  {
+    id: 11,
+    caption: 'Vigyan Ratna Puraskar 2026 Poster',
+    image: veerRatnaPoster,
+    defaultRatio: 0.89,
   },
 ];
 
