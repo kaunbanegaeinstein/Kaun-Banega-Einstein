@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { onAuthStateChanged, signOut } from 'firebase/auth';
-import { doc, getDoc } from 'firebase/firestore';
+import { doc, getDoc, onSnapshot } from 'firebase/firestore';
 import { FiLogOut, FiUser } from 'react-icons/fi';
 import { useNavigate } from 'react-router-dom';
 import { auth, firestore } from '../lib/firebase';
@@ -13,6 +13,8 @@ const StudentDashboard = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    let unsubscribeSettings = null;
+
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (!user) {
         setLoading(false);
@@ -26,12 +28,23 @@ const StudentDashboard = () => {
         if (studentDoc.exists()) {
           const data = studentDoc.data();
           setStudentData(data);
-        }
 
-        // Check if hall tickets are published
-        const settingsDoc = await getDoc(doc(firestore, 'settings', 'individual_controls'));
-        if (settingsDoc.exists()) {
-          setIsPublished(settingsDoc.data().hallTicketPublished === true);
+          const settingsRef = doc(firestore, 'settings', 'individual_controls');
+          unsubscribeSettings = onSnapshot(settingsRef, (settingsDoc) => {
+            if (!settingsDoc.exists()) {
+              setIsPublished(false);
+              return;
+            }
+
+            const settings = settingsDoc.data();
+            const publishedUdiseNumbers = settings.publishedUdiseNumbers || {};
+            setIsPublished(
+              publishedUdiseNumbers[String(data.udise)] === true
+            );
+          }, (error) => {
+            console.error('Error watching hall ticket publication:', error);
+            setIsPublished(false);
+          });
         }
       } catch (error) {
         console.error('Error fetching student data:', error);
@@ -40,7 +53,10 @@ const StudentDashboard = () => {
       }
     });
 
-    return unsubscribe;
+    return () => {
+      if (unsubscribeSettings) unsubscribeSettings();
+      unsubscribe();
+    };
   }, [navigate]);
 
   const handleLogout = async () => {

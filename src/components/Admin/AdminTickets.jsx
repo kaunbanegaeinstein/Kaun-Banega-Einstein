@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import {
-  FiCheckCircle, FiClock, FiFileText, FiEye, FiX,
+  FiCheckCircle, FiFileText, FiEye,
   FiZap, FiGlobe, FiRefreshCw, FiAlertCircle, FiDownload,
 } from 'react-icons/fi';
 import {
@@ -41,6 +41,11 @@ const AdminTickets = () => {
   const [sessionPDFs, setSessionPDFs]   = useState({});
   const [toast, setToast]               = useState(null);
 
+  const showToast = useCallback((type, msg) => {
+    setToast({ type, msg });
+    setTimeout(() => setToast(null), 5000);
+  }, []);
+
   // ── Load schools ────────────────────────────────────────────────────────────
   const loadSchools = useCallback(async () => {
     setLoading(true);
@@ -68,12 +73,13 @@ const AdminTickets = () => {
       const indSnapshot = await getDocs(indRef);
       if (!indSnapshot.empty) {
         const settingsDoc = await getDoc(doc(firestore, 'settings', 'individual_controls'));
-        const indPublished = settingsDoc.exists() ? !!settingsDoc.data().hallTicketPublished : false;
+        const settings = settingsDoc.exists() ? settingsDoc.data() : {};
+        const publishedUdiseNumbers = settings.publishedUdiseNumbers || {};
         
         const indSchoolsMap = new Map();
         indSnapshot.forEach(docSnap => {
           const student = docSnap.data();
-          const udise = student.udise || 'UNKNOWN';
+          const udise = String(student.udise || 'UNKNOWN');
           if (!indSchoolsMap.has(udise)) {
             indSchoolsMap.set(udise, {
               id: `ind_${udise}`,
@@ -81,7 +87,7 @@ const AdminTickets = () => {
               name: student.school || 'Unknown School',
               region: 'Individual', // used as placeholder
               count: 0,
-              published: indPublished,
+              published: publishedUdiseNumbers[udise] === true,
               isIndividual: true,
             });
           }
@@ -100,15 +106,14 @@ const AdminTickets = () => {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [showToast]);
 
-  useEffect(() => { loadSchools(); }, [loadSchools]);
-
-  // ── Toast helper ────────────────────────────────────────────────────────────
-  const showToast = (type, msg) => {
-    setToast({ type, msg });
-    setTimeout(() => setToast(null), 5000);
-  };
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      loadSchools();
+    }, 0);
+    return () => clearTimeout(timeoutId);
+  }, [loadSchools]);
 
   // ── Derive display status for a school ─────────────────────────────────────
   const getStatus = (school) => {
@@ -172,8 +177,17 @@ const AdminTickets = () => {
     setPublishingId(school.udise);
     try {
       if (school.isIndividual) {
-        await setDoc(doc(firestore, 'settings', 'individual_controls'), {
-          hallTicketPublished: true,
+        const settingsRef = doc(firestore, 'settings', 'individual_controls');
+        const settingsDoc = await getDoc(settingsRef);
+        const publishedUdiseNumbers = settingsDoc.exists()
+          ? (settingsDoc.data().publishedUdiseNumbers || {})
+          : {};
+        await setDoc(settingsRef, {
+          hallTicketPublished: false,
+          publishedUdiseNumbers: {
+            ...publishedUdiseNumbers,
+            [String(school.udise)]: true,
+          },
           hallTicketPublishedAt: new Date().toISOString(),
         }, { merge: true });
       } else {
@@ -198,8 +212,15 @@ const AdminTickets = () => {
     setPublishingId(school.udise);
     try {
       if (school.isIndividual) {
-        await setDoc(doc(firestore, 'settings', 'individual_controls'), {
+        const settingsRef = doc(firestore, 'settings', 'individual_controls');
+        const settingsDoc = await getDoc(settingsRef);
+        const publishedUdiseNumbers = settingsDoc.exists()
+          ? { ...(settingsDoc.data().publishedUdiseNumbers || {}) }
+          : {};
+        delete publishedUdiseNumbers[String(school.udise)];
+        await setDoc(settingsRef, {
           hallTicketPublished: false,
+          publishedUdiseNumbers,
         }, { merge: true });
       } else {
         await updateDoc(doc(firestore, 'schools', school.id), {
